@@ -1,0 +1,94 @@
+select x.*,
+avg(x."Value") over(order by x."year" asc, x.quarter asc
+rows between 3 preceding and current row)
+as "12 month rolling average",
+x."Value"/"12 month rolling average" "raw/rolling avg"
+from
+(select
+"year",
+"quarter",
+"Value"
+from
+(SELECT 
+cast(left(Ref_Date,4) as float) "year",
+case when cast(right(ref_date,2) as float) in (1,2,3) then 1
+when cast(right(ref_date,2) as float) in (4,5,6) then 2
+when cast(right(ref_date,2) as float) in (7,8,9) then 3
+else 4 
+end as "quarter",
+sum(CAST("VALUE" AS FLOAT)) "Value"
+FROM PRD_ANALYTICS_DATA.STATCAN_CAD_INT_MER_TRADE_IMP
+where
+hs_Code in (160232  ,
+020900  ,
+021099  ,
+160100  ,
+160220  ,
+020714  ,
+020713  ,
+020712  ,
+020711  
+)
+and COUNTRY = 'ALL_COUNTRIES'
+group by
+cast(left(Ref_Date,4) as float),
+case when cast(right(ref_date,2) as float) in (1,2,3) then 1
+when cast(right(ref_date,2) as float) in (4,5,6) then 2
+when cast(right(ref_date,2) as float) in (7,8,9) then 3
+else 4 end
+) y
+) x
+
+
+Kyle Burak
+Senior Economist / Économiste principal
+FCC I FAC 
+Tel/Tél : 204-815-0620
+
+From: Nkapnang Djossi, Isabelle <isabelle.nkapnang@fcc-fac.ca> 
+Sent: March 9, 2022 12:53 PM
+To: Burak, Kyle <kyle.burak@fcc-fac.ca>
+Subject: Trade sql code
+
+select x.*,
+avg(x."Value") over(order by x."year" asc, x.quarter asc
+rows between 3 preceding and current row)
+as "12 month rolling average",
+x."Value"/"12 month rolling average" "raw/rolling avg"
+from
+(select
+"year",
+"quarter",
+"Value"
+from
+(SELECT 
+cast(left(Ref_Date,4) as float) "year",
+case when cast(right(ref_date,2) as float) in (1,2,3) then 1
+when cast(right(ref_date,2) as float) in (4,5,6) then 2
+when cast(right(ref_date,2) as float) in (7,8,9) then 3
+else 4 
+end as "quarter",
+"MONTH" "Month",
+sum(CAST("VALUE" AS FLOAT)) "Value"
+FROM PRD_ANALYTICS_DATA.STATCAN_CAD_INT_MER_TRADE_IMP
+where
+hs_Code in (160232  ,
+020900  ,
+021099  ,
+160100  ,
+160220  ,
+020714  ,
+020713  ,
+020712  ,
+020711  
+)
+and COUNTRY = 'ALL_COUNTRIES'
+group by
+"year",
+case when cast(right(ref_date,2) as float) in (1,2,3) then 1
+when cast(right(ref_date,2) as float) in (4,5,6) then 2
+when cast(right(ref_date,2) as float) in (7,8,9) then 3
+else 4,
+"Month"
+) y
+) x
