@@ -1,0 +1,8 @@
+See the attached power query.
+
+In the source it has:
+= {Number.From(#date(2000,1,1))..Number.From(Date.AddYears(Date.From(DateTime.LocalNow()),2))}
+
+What this is saying the date range will always be Jan 1, 2000 to 2 years from today. You can do AddMonths to this as well. 
+
+The code after changes it to monthly and adds some additional columns.
